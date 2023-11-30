@@ -42,3 +42,19 @@ export function validateUser(data) {
     userData,
   };
 }
+
+export function validatePartialUser(data) {
+  const result = registerSchema.partial().safeParse(data);
+
+  const {
+    hasError,
+    errorMessages,
+    data: userData,
+  } = extractValidationData(result);
+
+  return {
+    hasError,
+    errorMessages,
+    userData,
+  };
+}

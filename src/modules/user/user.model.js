@@ -49,7 +49,7 @@ const User = sequelize.define('users', {
   },
   passwordChangedAt: {
     type: DataTypes.DATE,
-    allowNull: false,
+    allowNull: true,
   },
   status: {
     type: DataTypes.BOOLEAN,
