@@ -1,3 +1,4 @@
+import { AppError } from '../../common/errors/appError.js';
 import { UserService } from './user.service.js';
 
 export const validateExistUser = async (req, res, next) => {
@@ -7,10 +8,7 @@ export const validateExistUser = async (req, res, next) => {
     const user = await UserService.findOne(id);
 
     if (!user) {
-      return res.status(404).json({
-        status: 'error',
-        message: `user with id: ${id} not found`,
-      });
+      return next(new AppError(`user with id: ${id} not found`, 404));
     }
 
     req.user = user;
