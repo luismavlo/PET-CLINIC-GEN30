@@ -1,6 +1,8 @@
 import { Sequelize } from 'sequelize';
 import { envs } from './../enviroments/enviroments.js';
 
+//* postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require
+
 export const sequelize = new Sequelize(envs.DB_URI, {
   logging: false,
 });

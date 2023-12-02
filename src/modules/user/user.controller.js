@@ -4,18 +4,25 @@ import { validateUser, validatePartialUser } from './user.schema.js';
 import { UserService } from './user.service.js';
 
 export const register = catchAsync(async (req, res, next) => {
-  // const { hasError, errorMessages, userData } = validateUser(req.body);
+  const { hasError, errorMessages, userData } = validateUser(req.body);
 
-  // if (hasError) {
-  //   return res.status(422).json({
-  //     status: 'error',
-  //     message: errorMessages,
-  //   });
-  // }
+  if (hasError) {
+    return res.status(422).json({
+      status: 'error',
+      message: errorMessages,
+    });
+  }
 
-  const user = await UserService.create(req.body);
+  const user = await UserService.create(userData);
 
-  return res.status(201).json(user);
+  return res.status(201).json({
+    id: user.id,
+    name: user.name,
+    surname: user.surname,
+    email: user.email,
+    role: user.role,
+    photo: user.photo,
+  });
 });
 
 export const login = catchAsync(async (req, res) => {});
