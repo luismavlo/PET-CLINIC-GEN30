@@ -8,7 +8,7 @@ import {
   updateUser,
 } from './user.controller.js';
 
-import { validateExistUser } from './user.middleware.js'
+import { protect, validateExistUser } from './user.middleware.js';
 
 export const router = express.Router();
 
@@ -18,14 +18,8 @@ router.post('/login', login);
 
 router.get('/', findAllUser);
 
-
-
 router
   .route('/:id')
-  .get(validateExistUser, findOneUser)
+  .get(protect, validateExistUser, findOneUser)
   .patch(validateExistUser, updateUser)
   .delete(validateExistUser, deleteUser);
-
-
-
-
