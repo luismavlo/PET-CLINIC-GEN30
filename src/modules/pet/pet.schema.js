@@ -24,3 +24,19 @@ export function validatePet(data) {
     petData,
   };
 }
+
+export function validatePartialPet(data) {
+  const result = petSchema.partial().safeParse(data);
+
+  const {
+    hasError,
+    errorMessages,
+    data: petData,
+  } = extractValidationData(result);
+
+  return {
+    hasError,
+    errorMessages,
+    petData,
+  };
+}
