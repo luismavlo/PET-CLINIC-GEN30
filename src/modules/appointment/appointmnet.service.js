@@ -1,7 +1,9 @@
 import { Op } from 'sequelize';
 import Appointment from './appointment.model.js';
 import { sequelize } from '../../config/database/database.js';
+import moment from 'moment-timezone';
 import { QueryTypes } from 'sequelize';
+
 
 export class AppointmentService {
   static async create(data) {
@@ -30,18 +32,66 @@ export class AppointmentService {
     durationMinutes = 30,
     startTime
   ) {
-    const appointments = await sequelize.query(
-      'SELECT * FROM appointments WHERE medic_id = :medicId and status = :status and start_time >= :startTime',
+
+    const databaseTimeZone = 'US/Eastern';
+    const startMoment = moment(startTime).tz(databaseTimeZone);
+    const endMoment = startMoment.clone().add(durationMinutes, 'minutes')
+
+    const exactMatchAppointments = await sequelize.query(
+      'SELECT * FROM appointments WHERE medic_id = :medicId and status = :status and start_time = :startTime',
       {
         type: QueryTypes.SELECT,
         replacements: {
           status: 'pending',
           medicId: medicId,
-          startTime: startTime,
+          startTime: startMoment.toISOString(),
         },
       }
     );
 
-    return appointments;
+
+    if(exactMatchAppointments.length >= 1){
+      return exactMatchAppointments;
+    }
+
+    const overlappingAppointments = await sequelize.query(
+      "SELECT * FROM appointments WHERE medic_id = :medicId AND status = :status AND start_time < :endTime AND start_time + INTERVAL '30 minutes' > :startTime ",
+      {
+        type: QueryTypes.SELECT,
+        replacements: {
+          status: 'pending',
+          medicId: medicId,
+          endTime: endMoment.toISOString(),
+          startTime: startMoment.toISOString()
+        }
+      }
+    )
+
+    return overlappingAppointments;
+  }
+
+  static async findOneAppointment(id){
+    return await Appointment.findOne({
+      where: {
+        id: id,
+        status: 'pending'
+      }
+    })
+  }
+
+  static async findAllAppointment(id){
+    return await Appointment.findAll({
+      where: {
+        status: 'pending'
+      }
+    })
+  }
+
+  static async delete(appointment){
+    return await appointment.update({ status: 'cancelled' })
+  }
+
+  static async update(appointment) {
+    return await appointment.update({ status: 'completed'})
   }
 }

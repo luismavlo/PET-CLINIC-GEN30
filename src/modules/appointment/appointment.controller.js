@@ -34,29 +34,56 @@ export const scheduleAppointment = catchAsync(async (req, res, next) => {
     );
   }
 
-  // console.log(appointmentData.startTime);
-
-  // const appointment = await AppointmentService.findAppointmentByTime(
-  //   appointmentData.medicId,
-  //   req.body.durationMinutes,
-  //   appointmentData.startTime
-  // );
-
-  const appointment = await AppointmentService.findAppointmentByTimeSQL(
+  const appointments = await AppointmentService.findAppointmentByTimeSQL(
     appointmentData.medicId,
     req.body.durationMinutes,
     appointmentData.startTime
   );
 
-  // console.log(appointment);
 
-  // if (appointment) {
-  //   return next(
-  //     new AppError('The doctor already has an appointmnet assigned', 409)
-  //   );
-  // }
+  if (appointments.length >= 1) {
+     return next(
+       new AppError('The doctor already has an appointmnet assigned', 409)
+    );
+  }
 
-  // const appointmentCreated = await AppointmentService.create(appointmentData);
+  const appointmentCreated = await AppointmentService.create(appointmentData);
 
-  return res.status(201).json({ appointment });
+  return res.status(201).json(appointmentCreated);
 });
+
+
+export const findAllAppointments = catchAsync(async(req, res, next) => {
+  const appointments = await AppointmentService.findAllAppointment();
+
+  return res.status(200).json(appointments)
+})
+
+export const findOneAppointment = catchAsync(async(req,res,next) => {
+  const { appointment } = req;
+
+  return res.status(200).json(appointment)
+})
+export const deleteAppointment = catchAsync(async(req,res,next) => {
+  const { appointment } = req;
+
+  //TODO: no se deberia poder eliminar una cita completada.
+
+  //TODO: solo se puede cancelar una cita antes de la hora de la cita.
+
+  await AppointmentService.delete(appointment)
+
+  return res.status(204).json(null)
+})
+
+export const updateAppointment = catchAsync(async (req,res,next) => {
+  const { appointment } = req;
+
+  await AppointmentService.update(appointment);
+
+  //TODO: no deberian completar una cita que ha sido cancelada.
+
+  return res.status(200).json({
+    message: 'the appointment has been completed'
+  })
+})
