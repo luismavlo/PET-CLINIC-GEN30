@@ -3,6 +3,9 @@ import Appointment from './appointment.model.js';
 import { sequelize } from '../../config/database/database.js';
 import moment from 'moment-timezone';
 import { QueryTypes } from 'sequelize';
+import Pet from '../pet/pet.model.js';
+import Medic from '../medic/medic.model.js';
+import User from '../user/user.model.js';
 
 
 export class AppointmentService {
@@ -83,7 +86,22 @@ export class AppointmentService {
     return await Appointment.findAll({
       where: {
         status: 'pending'
-      }
+      },
+      include: [
+        {
+          model: Pet,
+          include: [
+            {
+              model: User,
+              attributes: ['name', 'dni', 'surname']
+            }
+          ]
+        },
+        {
+          model: Medic,
+          attributes: ['dni', 'surname', 'name', 'speciality']
+        },
+      ]
     })
   }
 

@@ -1,4 +1,5 @@
 import User from './user.model.js';
+import Pet from '../pet/pet.model.js';
 
 export class UserService {
   static async findOne(id) {
@@ -24,6 +25,11 @@ export class UserService {
       where: {
         status: true,
       },
+      include: [
+        {
+          model: Pet,
+        }
+      ]
     });
   }
 
