@@ -7,10 +7,13 @@ import {
   deletePet,
 } from './pet.controller.js';
 import { validateExistPet } from './pet.middleware.js';
+import { uploadSingle } from '../../config/plugins/upload-files.plugin.js';
 
 export const router = express.Router();
 
-router.route('/').get(findAllPets).post(createPet);
+router.route('/')
+  .get(findAllPets)
+  .post(uploadSingle('photo') ,createPet);
 
 router
   .route('/:id')

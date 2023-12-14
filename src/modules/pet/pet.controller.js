@@ -3,6 +3,7 @@ import { generateUUID } from '../../config/plugins/generate-uuid.plugin.js';
 import { httpClient } from '../../config/plugins/http-client.plugin.js';
 import { validatePartialPet, validatePet } from './pet.schema.js';
 import { PetService } from './pet.service.js';
+import { UploadFile } from '../../common/utils/upload-files-cloud.js';
 
 export const findAllPets = catchAsync(async (req, res, next) => {
   const pets = await PetService.findAll();
@@ -11,7 +12,17 @@ export const findAllPets = catchAsync(async (req, res, next) => {
 });
 
 export const createPet = catchAsync(async (req, res, next) => {
-  const { hasError, errorMessages, petData } = validatePet(req.body);
+
+  const dataBody = {
+    name: req.body.name,
+    birthdate: req.body.birthdate,
+    specie: req.body.specie,
+    race: req.body.race,
+    userId: +req.body.userId
+  }
+
+  const { hasError, errorMessages, petData } = validatePet(dataBody);
+
 
   if (hasError) {
     return res.status(422).json({
@@ -19,6 +30,13 @@ export const createPet = catchAsync(async (req, res, next) => {
       message: errorMessages,
     });
   }
+
+  const path = `pet/${generateUUID()}-${req.file.originalname}`;
+
+  const photoUrl = await UploadFile.uploadToFirebase(
+    path,
+    req.file.buffer
+  )
 
   const medicalCardNumber = generateUUID();
 
@@ -30,6 +48,7 @@ export const createPet = catchAsync(async (req, res, next) => {
 
   petData.medicalCardNumber = medicalCardNumber;
   petData.genetic_diseases = diseases;
+  petData.photo = photoUrl;
 
   const pet = await PetService.create(petData);
 

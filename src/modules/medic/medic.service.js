@@ -1,4 +1,7 @@
 import Medic from './medic.model.js';
+import Appointment from '../appointment/appointment.model.js';
+import Pet from '../pet/pet.model.js';
+import User from '../user/user.model.js';
 
 export class MedicService {
   static async findOne(id) {
@@ -15,6 +18,21 @@ export class MedicService {
       where: {
         status: true,
       },
+      include: [
+        {
+          model: Appointment,
+          where: {
+            status: 'pending'
+          },
+          required: false,
+          include:[
+            {
+              model: Pet,
+              include: [{ model: User, attributes: ['name', 'dni'] }]
+            },
+          ],
+        }
+      ]
     });
   }
 
