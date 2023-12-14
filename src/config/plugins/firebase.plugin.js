@@ -12,7 +12,7 @@ const firebaseConfig = {
 
 
 const firebaseApp = initializeApp(firebaseConfig);
-const storage = getStorage(firebaseApp);
+const storage = getStorage(firebaseApp); //este lugar donde se almacena los archivos.
 
 export const utilsFirebase = {
   storage: storage,
