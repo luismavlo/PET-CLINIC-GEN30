@@ -6,6 +6,10 @@ La aplicación para la Clínica Veterinaria tiene como objetivo facilitar la ges
 
 https://dbdocs.io/lmavendano1597/proyecto-de-citas-clinica-veterianria
 
+## Documentación de los endpoints:
+
+https://documenter.getpostman.com/view/17832534/2s9YkkfiUG
+
 ## Pasos para ejecutar este backend
 
 1. Descargue el repositorio en su máquina local, o clone el mismo utilizando la siguiente dirección: https://github.com/luismavlo/PET-CLINIC-GEN30.git
